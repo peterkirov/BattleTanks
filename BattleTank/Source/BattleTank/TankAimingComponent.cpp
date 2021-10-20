@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankBarrel.h"
+#include "TankTurret.h"
 #include "TankAimingComponent.h"
 
 
@@ -22,6 +23,11 @@ void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet)
 	Barrel = BarrelToSet;
 }
 
+void UTankAimingComponent::SetTurretReference(UTankTurret* TurretToSet)
+{
+	Turret = TurretToSet;
+}
+
 
 void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed) {
 	auto OutTankName = GetOwner()->GetName();
@@ -35,7 +41,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed) {
 	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
 
 	//calculate the outlaunch velocity
-
+	
 	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity
 	(
 		this,
@@ -43,21 +49,38 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed) {
 		StartLocation,
 		HitLocation,
 		LaunchSpeed,
+		false,
+		0,
+		0,
 		ESuggestProjVelocityTraceOption::DoNotTrace
 	);
-
-
+	
+	/*const TArray<AActor*> ActorsToIgnore;
+	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity(
+		this,
+		OutLaunchVelocity,
+		BarrelLocation,
+		HitLocation,
+		LaunchSpeed,
+		false,
+		0.f,
+		0.f,
+		ESuggestProjVelocityTraceOption::TraceFullPath,
+		FCollisionResponseParams::DefaultResponseParam,
+		ActorsToIgnore,
+		true
+	);*/
 	if (bHaveAimSolution) 
 	{
 		auto AimDirection = OutLaunchVelocity.GetSafeNormal();
 		auto Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("%f: aim solution found"), Time);
+		UE_LOG(LogTemp, Warning, TEXT("%f: aim solution found %s"), Time, *OutTankName);
 		MoveBarrel(AimDirection);
-
+		MoveTurret(AimDirection);
 	}
 	else {
 		auto Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("%f: no aim solve found"), Time);
+		UE_LOG(LogTemp, Warning, TEXT("%f: no aim solve found %s"), Time, *OutTankName);
 	}
 	//if nothing found do nothing
 
@@ -74,6 +97,10 @@ void UTankAimingComponent::MoveBarrel(FVector AimDirection) {
 	auto AimAsRotator = AimDirection.Rotation();
 	auto DeltaRotator = AimAsRotator - BarrelRotator;
 	
-	Barrel->Elevate(5); // TODO remove magic number
+	Barrel->Elevate(DeltaRotator.Pitch); // TODO remove magic number
 	
+}
+
+void UTankAimingComponent::MoveTurret(FVector AimDirection)
+{
 }

@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BattleTank.h"
+#include "Tank.h"
 #include "TankPlayerController.h"
 
 void ATankPlayerController::BeginPlay()
@@ -52,7 +53,6 @@ void ATankPlayerController::AimTowardsCrosshair() const
 		// TODO Tell controlled tank to aim at this point
 		GetControlledTank()->AimAt(HitLocation);
 	}
-	GetControlledTank()->AimAt(HitLocation);
 }
 
 // Get world location of linetrace through crosshair, true if hits landscape
@@ -67,12 +67,13 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
 	//"De-project" the screen position of the crosshair to a world direction
 	if (GetLookDirection(ScreenLocation, LookDirection)) {
 		//line trace along that look direction see what we hit (up to max range)
+		//TODO make sure that a max range is set
 		if (GetLookVectorHitDirection(LookDirection, HitLocation)) {
 			return true;
 		}
 
 	}
-	return false;
+	return true;
 }
 
 bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const {
