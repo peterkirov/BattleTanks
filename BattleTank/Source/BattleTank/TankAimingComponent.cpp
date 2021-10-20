@@ -103,4 +103,13 @@ void UTankAimingComponent::MoveBarrel(FVector AimDirection) {
 
 void UTankAimingComponent::MoveTurret(FVector AimDirection)
 {
+	//take the aim direction and rotate the turret 
+	//work out difference between current turrent rotation and aim direction
+	//rotate the turret to the correct position
+	auto TurretRotator = Turret->GetForwardVector().Rotation();
+	auto AimAsRotator = AimDirection.Rotation();
+	auto DeltaRotator = AimAsRotator - TurretRotator;
+	
+	Turret->Rotate(DeltaRotator.Yaw);
+
 }
