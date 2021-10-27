@@ -34,7 +34,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed) {
 	auto BarrelLocation = Barrel->GetComponentLocation();
 	//UE_LOG(LogTemp, Warning, TEXT("%s aiming at %s from %s"), *OutTankName, *HitLocation.ToString(), *BarrelLocation.ToString());
 
-	if (!Barrel) {
+	if (!Barrel || !Turret) {
 		return;
 	}
 	FVector OutLaunchVelocity = FVector(0);
@@ -74,7 +74,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed) {
 	{
 		auto AimDirection = OutLaunchVelocity.GetSafeNormal();
 		
-		MoveBarrel(AimDirection);
+		MoveBarrel(AimDirection, HitLocation);
 	}
 	else {
 		//if nothing found do nothing
@@ -85,7 +85,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed) {
 }
 
 
-void UTankAimingComponent::MoveBarrel(FVector AimDirection) {
+void UTankAimingComponent::MoveBarrel(FVector AimDirection, FVector HitLocation) {
 	// take the aim direction and move the barrel
 	// work out difference between current barrel rotation and aim direction 
 	// and then move the barrel the right amount
@@ -99,5 +99,9 @@ void UTankAimingComponent::MoveBarrel(FVector AimDirection) {
 	//take the aim direction and rotate the turret 
 	//work out difference between current turrent rotation and aim direction
 	//rotate the turret to the correct position
-	Turret->Rotate(DeltaRotator.Yaw);
+
+	auto BarrelLocation = Barrel->GetComponentLocation();
+	auto YawRotator = (HitLocation - BarrelLocation).Rotation();
+	DeltaRotator = YawRotator - BarrelRotator;
+	Turret->Rotate(FMath::Abs(DeltaRotator.Yaw) < 180 ? DeltaRotator.Yaw : -DeltaRotator.Yaw);
 }
