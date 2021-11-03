@@ -29,6 +29,7 @@ private:
 	
 	UTankBarrel* Barrel = nullptr;//local barrel reference to spawn projectile
 
+	float ReloadTimeInSeconds = 3;
 
 protected:
 	// Called when the game starts or when spawned
