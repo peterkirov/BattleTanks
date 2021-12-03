@@ -39,18 +39,14 @@ Background music to create tension
 Iterative cycle
 
 World
-||
-V
+
+>
 Tanks
-||
-V
+>
 Controls
-||
-V
+>
 Player 2
-||
-v
+>
 UI
-||
-V
-World make more interesting
+>
+make World  more interesting
